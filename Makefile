@@ -1,6 +1,6 @@
 export TARGET = iphone:clang:6.1
 
-include theos/makefiles/common.mk
+include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = Runtime
 Runtime_FILES = $(call findfiles,sources)
