@@ -42,7 +42,7 @@
 #pragma mark - Description
 
 - (NSString *)description {
-	return [RTRuntime typeForEncoding:self.typeEncoding varName:self.name];
+	return [self typeWithName:self.name];
 }
 
 #pragma mark - Comparison
