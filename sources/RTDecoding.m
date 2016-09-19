@@ -71,6 +71,7 @@ NSArray *rtTypeForStructEncoding_(NSString *encodingString, NSString *varName, N
 				break;
 			}
 			break;
+
 		case RTStructModeType:
 			switch (c) {
 			case '"':
@@ -101,12 +102,14 @@ NSArray *rtTypeForStructEncoding_(NSString *encodingString, NSString *varName, N
 				break;
 			}
 			break;
+
 		default:
 		case RTStructModeNone:
 			switch (c) {
 			case '"':
 				mode = RTStructModeField;
 				break;
+
 			case '[':
 			case '{':
 			case '(':
@@ -121,6 +124,7 @@ NSArray *rtTypeForStructEncoding_(NSString *encodingString, NSString *varName, N
 				escapeLevel++;
 				typeString[typeStringIndex++] = c;
 				break;
+
 			case ']':
 			case ')':
 			case '}':
@@ -133,6 +137,7 @@ NSArray *rtTypeForStructEncoding_(NSString *encodingString, NSString *varName, N
 					typeStringIndex = 0;
 				}
 				break;
+
 			default:
 				typeString[typeStringIndex++] = c;
 				break;
@@ -140,13 +145,13 @@ NSArray *rtTypeForStructEncoding_(NSString *encodingString, NSString *varName, N
 			break;
 		}
 	}
+
 	// Add remaining type
 	if (fieldStringIndex != 0 || typeStringIndex != 0) {
 		typedString = rtTypeForEncoding_(@(typeString), @(fieldString), number);
 		typedArray = typedArray ? [typedArray arrayByAddingObject:typedString] : @[typedString];
 	}
 	rLog(@"struct DECODING: END");
-
 	free(typeString);
 	goto typeStringLabel; typeStringLabel:;
 
@@ -184,7 +189,14 @@ NSString *rtTypeForEncoding_(NSString *encodingString, NSString *varName, NSUInt
 	int unionNameIndex = 0;
 	BOOL unionStringEnded = NO;
 
+#define className unionName
+#define classNameIndex unionNameIndex
+
+#define protocolName structName
+#define protocolNameIndex structNameIndex
+
 	BOOL isDecodingSubstring = NO;
+	BOOL isDecodingProtocol = NO;
 
 	NSDictionary *varTypes = @{
 		@"c":@"char",
@@ -262,6 +274,7 @@ NSString *rtTypeForEncoding_(NSString *encodingString, NSString *varName, NSUInt
 				break;
 			}
 			break;
+
 		case RTVarTypeBitfield:
 			if (!isdigit(c)) {
 				if (!bitfieldStringEnded) {
@@ -274,6 +287,7 @@ NSString *rtTypeForEncoding_(NSString *encodingString, NSString *varName, NSUInt
 				//rLog(@"X");
 			}
 			break;
+
 		case RTVarTypeArray:
 			if (!isdigit(c)) {
 				if (!arrayStringEnded) {
@@ -291,11 +305,13 @@ NSString *rtTypeForEncoding_(NSString *encodingString, NSString *varName, NSUInt
 				//rLog(@"X");
 			}
 			break;
+
 		case RTVarTypeStruct:
 			if (c == '=') {
 				structStringEnded = YES;
 				rLog(@"S::{%s}", structName);
-			} else if (!structStringEnded)  {
+			} else if (!structStringEnded) {
+				structName = realloc(structName, (structNameIndex + 1) * sizeof(char));
 				structName[structNameIndex++] = c;
 			} else {
 				if (!isDecodingSubstring) {
@@ -305,11 +321,13 @@ NSString *rtTypeForEncoding_(NSString *encodingString, NSString *varName, NSUInt
 				}
 			}
 			break;
+
 		case RTVarTypeUnion:
 			if (c == '=') {
 				unionStringEnded = YES;
 				rLog(@"U::(%s)", unionName);
-			} else if (!unionStringEnded)  {
+			} else if (!unionStringEnded) {
+				unionName = realloc(unionName, (unionNameIndex + 1) * sizeof(char));
 				unionName[unionNameIndex++] = c;
 			} else {
 				if (!isDecodingSubstring) {
@@ -319,11 +337,13 @@ NSString *rtTypeForEncoding_(NSString *encodingString, NSString *varName, NSUInt
 				}
 			}
 			break;
+
 		case RTVarTypePointer:
 			internalType = rtTypeForEncoding_([encodingString substringWithRange:NSMakeRange(idx, encodingLength - idx)], varName, number);
 			idx = encodingLength;
 			rLog(@"P::\e[34m%@\e[m", [internalType stringByReplacingOccurrencesOfString:@"\e[m" withString:@"\e[m\e[34m"]);
 			break;
+
 		case RTVarTypeUnknown:
 			rLog(@"u::\e[34m%@\e[m", @"¯\\_(ツ)_/¯");
 			break;
@@ -332,8 +352,39 @@ NSString *rtTypeForEncoding_(NSString *encodingString, NSString *varName, NSUInt
 			rLog(@"A::\e[34m%@\e[m", [internalType stringByReplacingOccurrencesOfString:@"\e[m" withString:@"\e[m\e[34m"]);
 			idx = encodingLength;
 			break;
+
+		case RTVarTypePrimitive:
+			if (c == '"') {
+				if (!isDecodingSubstring) {
+					isDecodingSubstring = YES;
+					rLog(@"C started class type");
+				} else {
+					isDecodingSubstring = NO;
+					rLog(@"C (%s)", className);
+					rLog(@"C stopped class type");
+				}
+			} else if (c == '<' || c == '>') {
+				if (!isDecodingProtocol) {
+					isDecodingProtocol = YES;
+					rLog(@"C started protocol type");
+				} else {
+					isDecodingProtocol = NO;
+					rLog(@"P (%s)", structName);
+					rLog(@"C stopped protocol type");
+				}
+			} else {
+				if (isDecodingSubstring && !isDecodingProtocol) {
+					className = realloc(className, (classNameIndex + 1) * sizeof(char));
+					className[classNameIndex++] = c;
+				} else {
+					protocolName = realloc(protocolName, (protocolNameIndex + 1) * sizeof(char));
+					protocolName[protocolNameIndex++] = c;
+				}
+			}
+			break;
+
 		default:
-			rLog(@"X");
+			rLog(@"X (%c)", c);
 		} // type switch
 	} // for loop
 	rLog(@"type ENCODING: END");
@@ -341,12 +392,14 @@ NSString *rtTypeForEncoding_(NSString *encodingString, NSString *varName, NSUInt
 	// Decide output formatting
 	switch (varType) {
 		case RTVarTypePrimitive:
+			internalType = (classNameIndex == 0) ? varTypes[encodingString] : (protocolNameIndex == 0) ? [NSString stringWithFormat:@"%s *", className] : [NSString stringWithFormat:@"%s<%s> *", className, protocolName];
 			if (varName == nil) {
-				typedString = [NSString stringWithFormat:@"%@ $%lu", varTypes[encodingString], (unsigned long)number];
+				typedString = [NSString stringWithFormat:@"%@ $%lu", internalType, (unsigned long)number];
 			} else {
-				typedString = [NSString stringWithFormat:@"%@ %@", varTypes[encodingString], varName];
+				typedString = [NSString stringWithFormat:@"%@ %@", internalType, varName];
 			}
 			break;
+
 		case RTVarTypeBitfield:
 			if (varName == nil) {
 				typedString = [NSString stringWithFormat:@"char $%lu:%lu", (unsigned long)number, (unsigned long)bitfieldNumber];
@@ -354,6 +407,7 @@ NSString *rtTypeForEncoding_(NSString *encodingString, NSString *varName, NSUInt
 				typedString = [NSString stringWithFormat:@"char %@:%lu", varName, (unsigned long)bitfieldNumber];
 			}
 			break;
+
 		case RTVarTypeArray:
 			rLog(@"A::\e[31m%@\e[m as internalType", internalType);
 			if (varName == nil) {
@@ -365,6 +419,7 @@ NSString *rtTypeForEncoding_(NSString *encodingString, NSString *varName, NSUInt
 				rLog(@"%@", typedString);
 			}
 			break;
+
 		case RTVarTypeStruct:
 			if (varName == nil) {
 				typedString = [NSString stringWithFormat:@"struct %s { %@; }", structName, [internalStructTypeArray componentsJoinedByString:@"; "]];
@@ -372,6 +427,7 @@ NSString *rtTypeForEncoding_(NSString *encodingString, NSString *varName, NSUInt
 				typedString = [NSString stringWithFormat:@"struct %s { %@; } %@", structName, [internalStructTypeArray componentsJoinedByString:@"; "], varName];
 			}
 			break;
+
 		case RTVarTypeUnion:
 			if (varName == nil) {
 				typedString = [NSString stringWithFormat:@"union %s { %@; }", unionName, [internalStructTypeArray componentsJoinedByString:@"; "]];
@@ -379,6 +435,7 @@ NSString *rtTypeForEncoding_(NSString *encodingString, NSString *varName, NSUInt
 				typedString = [NSString stringWithFormat:@"union %s { %@; } %@", unionName, [internalStructTypeArray componentsJoinedByString:@"; "], varName];
 			}
 			break;
+
 		case RTVarTypePointer:
 			if (varName == nil) {
 				typedString = [NSString stringWithFormat:@"%@ *", internalType];
@@ -389,13 +446,15 @@ NSString *rtTypeForEncoding_(NSString *encodingString, NSString *varName, NSUInt
 				//typedString = [NSString stringWithFormat:@"%@ *%@", internalType, varName];
 			}
 			break;
+
 		case RTVarTypeUnknown:
 			if (varName == nil) {
 				typedString = [NSString stringWithFormat:@"/* fp */ void *(*)(void *)"];
 			} else {
-				typedString = [NSString stringWithFormat:@"/* fp */ void *(*%@)(void *)", varName];
+				typedString = [NSString stringWithFormat:@"/* fp */ void *(%@)(void *)", varName];
 			}
 			break;
+
 		case RTVarTypeProperty:
 			if (varName == nil) {
 				typedString = [NSString stringWithString:internalType];
@@ -403,12 +462,19 @@ NSString *rtTypeForEncoding_(NSString *encodingString, NSString *varName, NSUInt
 				typedString = [NSString stringWithFormat:@"%@ %@", internalType, varName];
 			}
 			break;
+
 		default:
 			break;
 	}
 
 	free(encoding);
 	goto encodingLabel; encodingLabel:;
+
+#undef className
+#undef classNameIndex
+
+#undef protocolName
+#undef protocolNameIndex
 
 	free(unionName);
 	goto unionNameLabel; unionNameLabel:;
