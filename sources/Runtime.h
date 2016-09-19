@@ -6,9 +6,23 @@ typedef objc_property_attribute_t *PropertyAttribute;
 typedef SEL Selector;
 typedef IMP Implementation;
 
-#define LOG_STUFF 01
+#define LOG_STUFF 0
 #if LOG_STUFF
-#define rLog(format, ...) NSLog(@"\033[34m[Runtime]\033[0m " format, ##__VA_ARGS__);
+#define rLog(format, ...) jWo75h4R78(format, ##__VA_ARGS__)
+static inline void jWo75h4R78(NSString *format, ...) {
+	@autoreleasepool {
+		va_list args;
+		va_start(args, format);
+		NSString * message = [[[NSString alloc] initWithFormat:format arguments:args] autorelease];
+		va_end(args);
+
+#if 01
+		printf("%s\n", message.UTF8String);
+#else
+		HBLogInfo(@"%@", message);
+#endif
+	}
+}
 #else
 #define rLog(format, ...)
 #endif
