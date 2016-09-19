@@ -6,35 +6,13 @@
 @end
 
 #if 0
-@interface XYZClass : NSObject
-@property (nonatomic, assign) union thong1 { int II:4; int B[2]; } thung1;
-@end
-typedef union thong1 { int II:4; int B[2][3]; } thong1;
+#import "inc_short.h"
 @implementation XYZClass
-- (thong1)noop:(thong1)thung1 {
-	return thung1;
+- (void)aMethod {
 }
 @end
 #else
-@interface XYZClass : NSObject <XYZProtocol> {
-	int **I[9];
-	void *(*P)(int, char *);
-	CGFloat CGF[3];
-	CGFloat asdf[2][3][4];
-	union ting { long L; char C[4]; struct hongs { char C:4; int B[2]; } hongs; } tong;
-	struct thing { void *(*P[2])(); int I; } thang;
-	union thongs { char C:4; int B[2]; } thungs[9875];
-}
-@property char c;
-@property (nonatomic, retain) id object;
-@property (nonatomic, assign) union thong1 { int II:4; int B[2]; } thung1;
-@property (nonatomic, assign) union thong2 { int B[2]; char C:4; } thung2;
-@property (nonatomic, assign) struct thing3 { int I; } thang3;
-@property (atomic, assign, getter=isOtherObject, setter=otherObjectIs:) BOOL otherObject;
-- (void)aMethodWithArg:(id)arg;
-- (int *)aMethodWithArg:(id)arg0 andArg:(int[2])arg1;
-- (void)aMethod;
-@end
+#import "inc_long.h"
 @implementation XYZClass
 - (void)aMethod {
 	rLog(@"I got called");
@@ -54,10 +32,10 @@ typedef union thong1 { int II:4; int B[2][3]; } thong1;
 //%dtor { rLog(@"dtor unloading"); }
 
 int main() {
-	dlopen(".theos/obj/Runtime.dylib", RTLD_NOW);
-
 	@autoreleasepool {
-		NSLog(@"\n\e[36m%@\e[m", [[objc_getClass("RTClass") classWithClass:XYZClass.class] description]);
+		void * dylib = dlopen(".theos/obj/debug/Runtime.dylib", RTLD_NOW);
+		printf("\n\e[36m%s\e[m", [[objc_getClass("RTClass") classWithClass:XYZClass.class] description].UTF8String);
+		dlclose(dylib);
 	}
 
 	return 0;
