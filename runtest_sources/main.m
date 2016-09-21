@@ -1,5 +1,5 @@
 #include <dlfcn.h>
-#import "sources/Runtime.h"
+#import <Runtime.h>
 
 @protocol XYZProtocol
 - (void)aMethod;

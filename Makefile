@@ -7,7 +7,8 @@ Runtime_FILES = $(call findfiles,sources)
 #Runtime_FRAMEWORKS = CoreFoundation Foundation
 
 TOOL_NAME = runtest
-runtest_FILES = main.m
+runtest_FILES = $(call findfiles,runtest_sources)
+runtest_CFLAGS = -Isources
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 include $(THEOS_MAKE_PATH)/tool.mk
