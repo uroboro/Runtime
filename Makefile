@@ -13,8 +13,6 @@ include $(THEOS_MAKE_PATH)/tweak.mk
 include $(THEOS_MAKE_PATH)/tool.mk
 
 internal-stage::
-	#Filter plist
-	$(ECHO_NOTHING)if [ -f Filter.plist ]; then mkdir -p $(THEOS_STAGING_DIR)/Library/MobileSubstrate/DynamicLibraries/; cp Filter.plist $(THEOS_STAGING_DIR)/Library/MobileSubstrate/DynamicLibraries/testtweak.plist; fi$(ECHO_END)
 	#PreferenceLoader plist
 	$(ECHO_NOTHING)if [ -f Preferences.plist ]; then mkdir -p $(THEOS_STAGING_DIR)/Library/PreferenceLoader/Preferences/testtweak; cp Preferences.plist $(THEOS_STAGING_DIR)/Library/PreferenceLoader/Preferences/testtweak/; fi$(ECHO_END)
 
