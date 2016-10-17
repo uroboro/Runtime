@@ -1,0 +1,25 @@
+#!/bin/bash
+
+main() {
+	#argc=$#
+	#argv=($@)
+	#for (( i = 0; i < $argc; i++ )); do
+		#echo "argv[$i] = ${argv[$i]}"
+	#done
+
+	case "$TRAVIS_OS_NAME" in
+
+	osx)
+		brew update;
+		brew install dpkg ldid;
+		;;
+
+	linux)
+		curl -L https://sdks.website/dl/iPhoneOS8.1.sdk.tbz2 | tar -jxf - -C $THEOS/sdks/
+		wget https://sdks.website/dl/toolchain.zip -O temp.zip; unzip temp.zip -d $THEOS/toolchain/; rm temp.zip
+		;;
+
+	esac
+}
+
+main $0 $@

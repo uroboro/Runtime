@@ -1,0 +1,14 @@
+#!/bin/bash
+
+main() {
+	#argc=$#
+	#argv=($@)
+	#for (( i = 0; i < $argc; i++ )); do
+		#echo "argv[$i] = ${argv[$i]}"
+	#done
+
+	echo "Doing 'make'"
+	make
+}
+
+main $0 $@
