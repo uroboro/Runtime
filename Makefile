@@ -1,6 +1,8 @@
 #export TARGET = native:clang:8.1:6.1
 export TARGET = native:clang:latest
 
+findfiles = $(foreach ext, c cpp m mm x xm xi xmi, $(wildcard $(1)/*.$(ext)))
+
 include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = Runtime
