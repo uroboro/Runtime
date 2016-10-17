@@ -1,4 +1,5 @@
-export TARGET = native:clang:8.1:6.1
+#export TARGET = native:clang:8.1:6.1
+export TARGET = native:clang:latest
 
 include $(THEOS)/makefiles/common.mk
 
