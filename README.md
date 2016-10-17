@@ -1,5 +1,6 @@
-# Runtime
-Objective-C runtime access in Objective-C
+# Runtime: *Objective-C runtime access in Objective-C*
+
+[![Travis Status](https://travis-ci.org/uroboro/Runtime.svg)](https://travis-ci.org/uroboro/Runtime)
 
 For use with Cycript.
 
