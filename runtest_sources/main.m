@@ -34,7 +34,12 @@
 int main() {
 	@autoreleasepool {
 		void * dylib = dlopen(".theos/obj/debug/Runtime.dylib", RTLD_NOW);
-		printf("\n\e[36m%s\e[m", [[objc_getClass("RTClass") classWithClass:XYZClass.class] description].UTF8String);
+		printf("\n\e[36m%s\e[m\n", [[objc_getClass("RTClass") classWithClass:XYZClass.class] description].UTF8String);
+
+Class RTRuntime = objc_getClass("RTRuntime");
+for (NSString * imageName in [RTRuntime imageNames]) {
+printf("%s:\n[ %s ]\n", imageName.UTF8String, [[RTRuntime classNamesForImage:imageName] componentsJoinedByString:@", "].UTF8String);
+}
 		dlclose(dylib);
 	}
 
