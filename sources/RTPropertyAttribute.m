@@ -7,12 +7,12 @@
 }
 - (instancetype)initWithPropertyAttribute:(PropertyAttribute)propertyAttribute {
 	if ((self = [super init])) {
-		_propertyAttribute = propertyAttribute;
+		_internalPropertyAttribute = propertyAttribute;
 	}
 	return self;
 }
 - (PropertyAttribute)internalPropertyAttribute {
-	return _propertyAttribute;
+	return _internalPropertyAttribute;
 }
 
 @end

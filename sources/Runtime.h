@@ -37,92 +37,68 @@ NSString *rtTypeForEncoding(NSString *encodingString, NSString *varName);
 
 @class RTIvar;
 
-@interface RTClass : NSObject {
-	Class _class;
-}
+@interface RTClass : NSObject
+@property (nonatomic) Class internalClass;
 + (instancetype)classWithClass:(Class)cls;
 - (instancetype)initWithClass:(Class)cls;
-- (Class)internalClass;
 - (RTIvar *)getInstanceVariableWithName:(NSString *)name;
 @end
 
-@interface RTIvar : NSObject {
-	Ivar _ivar;
-}
+@interface RTIvar : NSObject
+@property (nonatomic) Ivar internalIvar;
 @property (nonatomic, assign) id owner;
-//+ (instancetype)ivarWithIvar:(Ivar)ivar;
 + (instancetype)ivarWithIvar:(Ivar)ivar andOwner:(id)owner;
-//- (instancetype)initWithIvar:(Ivar)ivar;
 - (instancetype)initWithIvar:(Ivar)ivar andOwner:(id)owner;
-- (Ivar)internalIvar;
 
 - (NSString *)name;
 - (NSString *)type;
 - (NSString *)typeWithName:(NSString *)name;
 @end
 
-@interface RTProperty : NSObject {
-	Property _property;
-}
+@interface RTProperty : NSObject
+@property (nonatomic) Property internalProperty;
 @property (nonatomic, assign) id owner;
-//+ (instancetype)propertyWithProperty:(Property)property;
 + (instancetype)propertyWithProperty:(Property)property andOwner:(id)owner;
-//- (instancetype)initWithProperty:(Property)property;
 - (instancetype)initWithProperty:(Property)property andOwner:(id)owner;
-- (Property)internalProperty;
 
 - (NSString *)backingIvar;
 - (NSString *)getter;
 - (NSString *)setter;
 @end
 
-@interface RTPropertyAttribute : NSObject {
-	PropertyAttribute _propertyAttribute;
-}
+@interface RTPropertyAttribute : NSObject
+@property (nonatomic) PropertyAttribute internalPropertyAttribute;
 + (instancetype)propertyAttributeWithPropertyAttribute:(PropertyAttribute)propertyAttribute;
 - (instancetype)initWithPropertyAttribute:(PropertyAttribute)propertyAttribute;
-- (PropertyAttribute)internalPropertyAttribute;
 @end
 
-@interface RTMethod : NSObject {
-	Method _method;
-}
+@interface RTMethod : NSObject
+@property (nonatomic) Method internalMethod;
 @property (nonatomic, assign) id owner;
-//+ (instancetype)methodWithMethod:(Method)method;
 + (instancetype)methodWithMethod:(Method)method andOwner:(id)owner;
-//- (instancetype)initWithMethod:(Method)method;
 - (instancetype)initWithMethod:(Method)method andOwner:(id)owner;
-- (Method)internalMethod;
 
 - (NSString *)name;
 @property (nonatomic, assign) BOOL isClassMethod;
 @end
 
-@interface RTSelector : NSObject {
-	Selector _selector;
-}
+@interface RTSelector : NSObject
+@property (nonatomic) Selector internalSelector;
 @property (nonatomic, assign) id owner;
-//+ (instancetype)selectorWithSelector:(Selector)selector;
 + (instancetype)selectorWithSelector:(Selector)selector andOwner:(id)owner;
-//- (instancetype)initWithSelector:(Selector)selector;
 - (instancetype)initWithSelector:(Selector)selector andOwner:(id)owner;
-- (Selector)internalSelector;
 @end
 
-@interface RTProtocol : NSObject {
-	Protocol *_protocol;
-}
+@interface RTProtocol : NSObject
+@property (nonatomic, assign) Protocol * internalProtocol;
 + (instancetype)protocolWithProtocol:(Protocol *)protocol;
 - (instancetype)initWithProtocol:(Protocol *)protocol;
-- (Protocol *)internalProtocol;
 @end
 
-@interface RTObject : NSObject {
-	NSObject *_object;
-}
+@interface RTObject : NSObject
+@property (nonatomic,assign) NSObject * internalObject;
 + (instancetype)objectWithObject:(NSObject *)object;
 - (instancetype)initWithObject:(NSObject *)object;
-- (NSObject *)internalObject;
 @end
 
 @interface RTRuntime : NSObject

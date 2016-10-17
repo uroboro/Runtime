@@ -7,55 +7,55 @@
 }
 - (instancetype)initWithObject:(NSObject *)object {
 	if ((self = [super init])) {
-		_object = object;
+		_internalObject = object;
 	}
 	return self;
 }
 - (NSObject *)internalObject {
-	return _object;
+	return _internalObject;
 }
 
 #pragma mark - Working with Instances
 - (id)copyWithSize:(size_t)size {
-	return object_copy(_object, size);
+	return object_copy(_internalObject, size);
 }
 - (id)dispose {
-	return object_dispose(_object);
+	return object_dispose(_internalObject);
 }
 - (RTIvar *)setInstanceVariableWithName:(NSString *)name value:(void *)value {
-	return [RTIvar ivarWithIvar:object_setInstanceVariable(_object, name.UTF8String, value) andOwner:self];
+	return [RTIvar ivarWithIvar:object_setInstanceVariable(_internalObject, name.UTF8String, value) andOwner:self];
 }
 - (RTIvar *)getInstanceVariableWithName:(NSString *)name value:(void **)outValue {
-	return [RTIvar ivarWithIvar:object_getInstanceVariable(_object, name.UTF8String, outValue) andOwner:self];
+	return [RTIvar ivarWithIvar:object_getInstanceVariable(_internalObject, name.UTF8String, outValue) andOwner:self];
 }
 - (void *)getIndexedIvars {
-	return object_getIndexedIvars(_object);
+	return object_getIndexedIvars(_internalObject);
 }
 - (id)getIvar:(RTIvar *)ivar {
-	return object_getIvar(_object, ivar.internalIvar);
+	return object_getIvar(_internalObject, ivar.internalIvar);
 }
 - (void)setIvar:(RTIvar *)ivar value:(id)value {
-	return object_setIvar(_object, ivar.internalIvar, value);
+	return object_setIvar(_internalObject, ivar.internalIvar, value);
 }
 - (NSString *)getClassName {
-	return [NSString stringWithUTF8String:object_getClassName(_object)];
+	return [NSString stringWithUTF8String:object_getClassName(_internalObject)];
 }
 - (RTClass *)getClass {
-	return [RTClass classWithClass:object_getClass(_object)];
+	return [RTClass classWithClass:object_getClass(_internalObject)];
 }
 - (RTClass *)setClass:(RTClass *)cls {
-	return [RTClass classWithClass:object_setClass(_object, cls.internalClass)];
+	return [RTClass classWithClass:object_setClass(_internalObject, cls.internalClass)];
 }
 
 #pragma mark - Associative References
 - (void)setAssociatedObjectForKey:(const void *)key value:(id)value policy:(NSString *)policyName {
-	objc_setAssociatedObject(_object, key, value, [RTRuntime associationPolicyWithName:policyName]);
+	objc_setAssociatedObject(_internalObject, key, value, [RTRuntime associationPolicyWithName:policyName]);
 }
 - (id)getAssociatedObjectForKey:(const void *)key {
-	return objc_getAssociatedObject(_object, key);
+	return objc_getAssociatedObject(_internalObject, key);
 }
 - (void)removeAssociatedObjects {
-	objc_removeAssociatedObjects(_object);
+	objc_removeAssociatedObjects(_internalObject);
 }
 
 @end

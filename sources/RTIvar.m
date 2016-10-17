@@ -13,23 +13,23 @@
 }
 - (instancetype)initWithIvar:(Ivar)ivar andOwner:(id)owner {
 	if ((self = [super init])) {
-		_ivar = ivar;
+		_internalIvar = ivar;
 		_owner = owner;
 	}
 	return self;
 }
 - (Ivar)internalIvar {
-	return _ivar;
+	return _internalIvar;
 }
 
 - (NSString *)name {
-	return [NSString stringWithUTF8String:ivar_getName(_ivar)];
+	return [NSString stringWithUTF8String:ivar_getName(_internalIvar)];
 }
 - (NSString *)typeEncoding {
-	return [NSString stringWithUTF8String:ivar_getTypeEncoding(_ivar)];
+	return [NSString stringWithUTF8String:ivar_getTypeEncoding(_internalIvar)];
 }
 - (ptrdiff_t)offset {
-	return ivar_getOffset(_ivar);
+	return ivar_getOffset(_internalIvar);
 }
 
 - (NSString *)type {

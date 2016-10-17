@@ -13,23 +13,23 @@
 }
 - (instancetype)initWithSelector:(Selector)selector andOwner:(id)owner {
 	if ((self = [super init])) {
-		_selector = selector;
+		_internalSelector = selector;
 		_owner = owner;
 	}
 	return self;
 }
 - (Selector)internalSelector {
-	return _selector;
+	return _internalSelector;
 }
 
 - (NSString *)name {
-	return [NSString stringWithUTF8String:sel_getName(_selector)];
+	return [NSString stringWithUTF8String:sel_getName(_internalSelector)];
 }
 - (Selector)registerName:(NSString *)name {
 	return sel_registerName(name.UTF8String);
 }
 - (BOOL)isEqualToSelector:(Selector)selector {
-	return sel_isEqual(_selector, selector);
+	return sel_isEqual(_internalSelector, selector);
 }
 
 #pragma mark - Description

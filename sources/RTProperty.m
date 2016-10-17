@@ -13,20 +13,20 @@
 }
 - (instancetype)initWithProperty:(Property)property andOwner:(id)owner {
 	if ((self = [super init])) {
-		_property = property;
+		_internalProperty = property;
 		_owner = owner;
 	}
 	return self;
 }
 - (Property)internalProperty {
-	return _property;
+	return _internalProperty;
 }
 
 - (NSString *)name {
-	return [NSString stringWithUTF8String:property_getName(_property)];
+	return [NSString stringWithUTF8String:property_getName(_internalProperty)];
 }
 - (NSDictionary *)attributes {
-	NSString *attributesString = [NSString stringWithUTF8String:property_getAttributes(_property)];
+	NSString *attributesString = [NSString stringWithUTF8String:property_getAttributes(_internalProperty)];
 	NSArray *attributesArray = [attributesString componentsSeparatedByString:@","];
 	__block NSMutableDictionary *dict_m = [NSMutableDictionary dictionary];
 	[attributesArray enumerateObjectsUsingBlock:^(NSString *obj, NSUInteger idx, BOOL *stop) {
@@ -35,7 +35,7 @@
 	return dict_m;
 }
 - (NSString *)copyAttributeValueWithName:(NSString *)attributeName {
-	char *value = property_copyAttributeValue(_property, attributeName.UTF8String);
+	char *value = property_copyAttributeValue(_internalProperty, attributeName.UTF8String);
 	NSString *string = [NSString stringWithUTF8String:value];
 	free(value);
 	return string;
@@ -43,8 +43,8 @@
 - (NSArray *)copyAttributeList {
 	return nil;
 	unsigned int outCount = 0;
-	PropertyAttribute attributes = property_copyAttributeList(_property, &outCount);
-	//rLog(@"attributes in property %p: %d", _property, outCount);
+	PropertyAttribute attributes = property_copyAttributeList(_internalProperty, &outCount);
+	//rLog(@"attributes in property %p: %d", _internalProperty, outCount);
 	CFMutableArrayRef array = CFArrayCreateMutable(kCFAllocatorDefault, (CFIndex)outCount, NULL);
 	for (unsigned int i = 0; i < outCount; i++) {
 		CFArrayAppendValue(array, [RTPropertyAttribute propertyAttributeWithPropertyAttribute:&attributes[i]]);

@@ -13,35 +13,35 @@
 }
 - (instancetype)initWithMethod:(Method)method andOwner:(id)owner {
 	if ((self = [super init])) {
-		_method = method;
+		_internalMethod = method;
 		_owner = owner;
 	}
 	return self;
 }
 - (Method)internalMethod {
-	return _method;
+	return _internalMethod;
 }
 
 - (NSString *)name {
-	return [NSString stringWithUTF8String:sel_getName(method_getName(_method))];
+	return [NSString stringWithUTF8String:sel_getName(method_getName(_internalMethod))];
 }
 - (NSString *)typeEncoding {
-	return [NSString stringWithUTF8String:method_getTypeEncoding(_method)];
+	return [NSString stringWithUTF8String:method_getTypeEncoding(_internalMethod)];
 }
 - (NSString *)returnType {
-	char *r = method_copyReturnType(_method);
+	char *r = method_copyReturnType(_internalMethod);
 	NSString *ret = [NSString stringWithUTF8String:r];
 	free(r);
 	return ret;
 }
 - (NSString *)argumentTypeAtIndex:(NSUInteger)index {
-	char *r = method_copyArgumentType(_method, index);
+	char *r = method_copyArgumentType(_internalMethod, index);
 	NSString *ret = [NSString stringWithUTF8String:r];
 	free(r);
 	return ret;
 }
 - (NSUInteger)numberOfArguments {
-	return (NSUInteger)method_getNumberOfArguments(_method);
+	return (NSUInteger)method_getNumberOfArguments(_internalMethod);
 }
 - (NSArray *)argumentTypes {
 	NSMutableArray *array = [NSMutableArray arrayWithCapacity:self.numberOfArguments];
