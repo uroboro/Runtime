@@ -2,19 +2,19 @@
 
 @implementation RTIvar
 
-+ (id)ivarWithIvar:(Ivar)ivar {
++ (instancetype)ivarWithIvar:(Ivar)ivar {
 	return [[[self alloc] initWithIvar:ivar] autorelease];
 }
-+ (id)ivarWithIvar:(Ivar)ivar andOwner:(RTClass *)class {
-	return [[[self alloc] initWithIvar:ivar andOwner:class] autorelease];
++ (instancetype)ivarWithIvar:(Ivar)ivar andOwner:(id)owner {
+	return [[[self alloc] initWithIvar:ivar andOwner:owner] autorelease];
 }
-- (id)initWithIvar:(Ivar)ivar {
+- (instancetype)initWithIvar:(Ivar)ivar {
 	return [self initWithIvar:ivar andOwner:nil];
 }
-- (id)initWithIvar:(Ivar)ivar andOwner:(RTClass *)class {
+- (instancetype)initWithIvar:(Ivar)ivar andOwner:(id)owner {
 	if ((self = [super init])) {
 		_ivar = ivar;
-		_owner = class;
+		_owner = owner;
 	}
 	return self;
 }

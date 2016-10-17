@@ -2,19 +2,19 @@
 
 @implementation RTProperty
 
-+ (id)propertyWithProperty:(Property)property {
++ (instancetype)propertyWithProperty:(Property)property {
 	return [[[self alloc] initWithProperty:property] autorelease];
 }
-+ (id)propertyWithProperty:(Property)property andOwner:(RTClass *)class {
-	return [[[self alloc] initWithProperty:property andOwner:class] autorelease];
++ (instancetype)propertyWithProperty:(Property)property andOwner:(id)owner {
+	return [[[self alloc] initWithProperty:property andOwner:owner] autorelease];
 }
-- (id)initWithProperty:(Property)property {
+- (instancetype)initWithProperty:(Property)property {
 	return [self initWithProperty:property andOwner:nil];
 }
-- (id)initWithProperty:(Property)property andOwner:(RTClass *)class {
+- (instancetype)initWithProperty:(Property)property andOwner:(id)owner {
 	if ((self = [super init])) {
 		_property = property;
-		_owner = class;
+		_owner = owner;
 	}
 	return self;
 }

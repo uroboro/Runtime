@@ -2,10 +2,10 @@
 
 @implementation RTProtocol
 
-+ (id)protocolWithProtocol:(Protocol *)protocol {
++ (instancetype)protocolWithProtocol:(Protocol *)protocol {
 	return [[[self alloc] initWithProtocol:protocol] autorelease];
 }
-- (id)initWithProtocol:(Protocol *)protocol {
+- (instancetype)initWithProtocol:(Protocol *)protocol {
 	if ((self = [super init])) {
 		_protocol = protocol;
 	}
@@ -49,7 +49,7 @@
 		isRequiredMethod:(BOOL)isRequiredMethod isInstanceMethod:(BOOL)isInstanceMethod {
 	return nil;
 	unsigned int outCount = 0;
-	struct objc_method_description *descriptions = protocol_copyMethodDescriptionList(_protocol, isRequiredMethod, isInstanceMethod, &outCount);
+	MethodDescription *descriptions = protocol_copyMethodDescriptionList(_protocol, isRequiredMethod, isInstanceMethod, &outCount);
  /**/rLog(@"method descriptions in protocol %@: %d", NSStringFromProtocol(_protocol), outCount);
 	CFMutableArrayRef array = CFArrayCreateMutable(kCFAllocatorDefault, (CFIndex)outCount, NULL);
 	for (unsigned int i = 0; i < outCount; i++) {
@@ -60,17 +60,17 @@
 	CFRelease(array);
 	return r;
 }
-- (struct objc_method_description)getMethodDescriptionForSelector:(RTSelector *)selector
+- (MethodDescription)getMethodDescriptionForSelector:(RTSelector *)selector
 		isRequiredMethod:(BOOL)isRequiredMethod isInstanceMethod:(BOOL)isInstanceMethod {
 	return protocol_getMethodDescription(_protocol, selector.internalSelector, isRequiredMethod, isInstanceMethod);
 }
-- (NSArray *)copyPropertyList {
+- (NSArray *)properties {
 	unsigned int outCount = 0;
 	Property *properties = protocol_copyPropertyList(_protocol, &outCount);
  /**/rLog(@"properties in protocol %@: %d", NSStringFromProtocol(_protocol), outCount);
 	CFMutableArrayRef array = CFArrayCreateMutable(kCFAllocatorDefault, (CFIndex)outCount, NULL);
 	for (unsigned int i = 0; i < outCount; i++) {
-		CFArrayAppendValue(array, [RTProperty propertyWithProperty:properties[i]]);
+		CFArrayAppendValue(array, [RTProperty propertyWithProperty:properties[i] andOwner:self]);
 	}
 	free(properties);
 	NSArray *r = [(NSMutableArray *)array copy];
@@ -79,7 +79,7 @@
 }
 - (RTProperty *)getPropertyWithName:(NSString *)name
 		isRequiredProperty:(BOOL)isRequiredProperty isInstanceProperty:(BOOL)isInstanceProperty {
-	return [RTProperty propertyWithProperty:protocol_getProperty(_protocol, name.UTF8String, isRequiredProperty, isInstanceProperty)];
+	return [RTProperty propertyWithProperty:protocol_getProperty(_protocol, name.UTF8String, isRequiredProperty, isInstanceProperty) andOwner:self];
 }
 - (NSArray *)copyProtocolList {
 	unsigned int *outCount = 0;

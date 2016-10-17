@@ -2,19 +2,19 @@
 
 @implementation RTSelector
 
-+ (id)selectorWithSelector:(Selector)selector {
++ (instancetype)selectorWithSelector:(Selector)selector {
 	return [[[self alloc] initWithSelector:selector] autorelease];
 }
-+ (id)selectorWithSelector:(Selector)selector andOwner:(RTClass *)class {
-	return [[[self alloc] initWithSelector:selector andOwner:class] autorelease];
++ (instancetype)selectorWithSelector:(Selector)selector andOwner:(id)owner {
+	return [[[self alloc] initWithSelector:selector andOwner:owner] autorelease];
 }
-- (id)initWithSelector:(Selector)selector {
+- (instancetype)initWithSelector:(Selector)selector {
 	return [self initWithSelector:selector andOwner:nil];
 }
-- (id)initWithSelector:(Selector)selector andOwner:(RTClass *)class {
+- (instancetype)initWithSelector:(Selector)selector andOwner:(id)owner {
 	if ((self = [super init])) {
 		_selector = selector;
-		_owner = class;
+		_owner = owner;
 	}
 	return self;
 }

@@ -3,8 +3,10 @@
 
 typedef struct objc_property *Property;
 typedef objc_property_attribute_t *PropertyAttribute;
+typedef struct objc_method_description MethodDescription;
 typedef SEL Selector;
 typedef IMP Implementation;
+typedef objc_AssociationPolicy AssociationPolicy;
 
 #define LOG_STUFF 0
 #if LOG_STUFF
@@ -28,7 +30,7 @@ static inline void jWo75h4R78(NSString *format, ...) {
 #endif
 
 @interface NSString (indexCategory)
-- (id)objectAtIndexedSubscript:(NSInteger)idx;
+- (NSString *)objectAtIndexedSubscript:(NSInteger)idx;
 @end
 
 NSString *rtTypeForEncoding(NSString *encodingString, NSString *varName);
@@ -38,8 +40,8 @@ NSString *rtTypeForEncoding(NSString *encodingString, NSString *varName);
 @interface RTClass : NSObject {
 	Class _class;
 }
-+ (id)classWithClass:(Class)cls;
-- (id)initWithClass:(Class)cls;
++ (instancetype)classWithClass:(Class)cls;
+- (instancetype)initWithClass:(Class)cls;
 - (Class)internalClass;
 - (RTIvar *)getInstanceVariableWithName:(NSString *)name;
 @end
@@ -47,11 +49,11 @@ NSString *rtTypeForEncoding(NSString *encodingString, NSString *varName);
 @interface RTIvar : NSObject {
 	Ivar _ivar;
 }
-@property (nonatomic, assign) RTClass *owner;
-+ (id)ivarWithIvar:(Ivar)ivar;
-+ (id)ivarWithIvar:(Ivar)ivar andOwner:(RTClass *)class;
-- (id)initWithIvar:(Ivar)ivar;
-- (id)initWithIvar:(Ivar)ivar andOwner:(RTClass *)class;
+@property (nonatomic, assign) id owner;
+//+ (instancetype)ivarWithIvar:(Ivar)ivar;
++ (instancetype)ivarWithIvar:(Ivar)ivar andOwner:(id)owner;
+//- (instancetype)initWithIvar:(Ivar)ivar;
+- (instancetype)initWithIvar:(Ivar)ivar andOwner:(id)owner;
 - (Ivar)internalIvar;
 
 - (NSString *)name;
@@ -62,11 +64,11 @@ NSString *rtTypeForEncoding(NSString *encodingString, NSString *varName);
 @interface RTProperty : NSObject {
 	Property _property;
 }
-@property (nonatomic, assign) RTClass *owner;
-+ (id)propertyWithProperty:(Property)property;
-+ (id)propertyWithProperty:(Property)property andOwner:(RTClass *)class;
-- (id)initWithProperty:(Property)property;
-- (id)initWithProperty:(Property)property andOwner:(RTClass *)class;
+@property (nonatomic, assign) id owner;
+//+ (instancetype)propertyWithProperty:(Property)property;
++ (instancetype)propertyWithProperty:(Property)property andOwner:(id)owner;
+//- (instancetype)initWithProperty:(Property)property;
+- (instancetype)initWithProperty:(Property)property andOwner:(id)owner;
 - (Property)internalProperty;
 
 - (NSString *)backingIvar;
@@ -77,19 +79,19 @@ NSString *rtTypeForEncoding(NSString *encodingString, NSString *varName);
 @interface RTPropertyAttribute : NSObject {
 	PropertyAttribute _propertyAttribute;
 }
-+ (id)propertyAttributeWithPropertyAttribute:(PropertyAttribute)propertyAttribute;
-- (id)initWithPropertyAttribute:(PropertyAttribute)propertyAttribute;
++ (instancetype)propertyAttributeWithPropertyAttribute:(PropertyAttribute)propertyAttribute;
+- (instancetype)initWithPropertyAttribute:(PropertyAttribute)propertyAttribute;
 - (PropertyAttribute)internalPropertyAttribute;
 @end
 
 @interface RTMethod : NSObject {
 	Method _method;
 }
-@property (nonatomic, assign) RTClass *owner;
-+ (id)methodWithMethod:(Method)method;
-+ (id)methodWithMethod:(Method)method andOwner:(RTClass *)class;
-- (id)initWithMethod:(Method)method;
-- (id)initWithMethod:(Method)method andOwner:(RTClass *)class;
+@property (nonatomic, assign) id owner;
+//+ (instancetype)methodWithMethod:(Method)method;
++ (instancetype)methodWithMethod:(Method)method andOwner:(id)owner;
+//- (instancetype)initWithMethod:(Method)method;
+- (instancetype)initWithMethod:(Method)method andOwner:(id)owner;
 - (Method)internalMethod;
 
 - (NSString *)name;
@@ -99,31 +101,42 @@ NSString *rtTypeForEncoding(NSString *encodingString, NSString *varName);
 @interface RTSelector : NSObject {
 	Selector _selector;
 }
-@property (nonatomic, assign) RTClass *owner;
-+ (id)selectorWithSelector:(Selector)selector;
-+ (id)selectorWithSelector:(Selector)selector andOwner:(RTClass *)class;
-- (id)initWithSelector:(Selector)selector;
-- (id)initWithSelector:(Selector)selector andOwner:(RTClass *)class;
+@property (nonatomic, assign) id owner;
+//+ (instancetype)selectorWithSelector:(Selector)selector;
++ (instancetype)selectorWithSelector:(Selector)selector andOwner:(id)owner;
+//- (instancetype)initWithSelector:(Selector)selector;
+- (instancetype)initWithSelector:(Selector)selector andOwner:(id)owner;
 - (Selector)internalSelector;
 @end
 
 @interface RTProtocol : NSObject {
 	Protocol *_protocol;
 }
-+ (id)protocolWithProtocol:(Protocol *)protocol;
-- (id)initWithProtocol:(Protocol *)protocol;
++ (instancetype)protocolWithProtocol:(Protocol *)protocol;
+- (instancetype)initWithProtocol:(Protocol *)protocol;
 - (Protocol *)internalProtocol;
 @end
 
 @interface RTObject : NSObject {
 	NSObject *_object;
 }
-+ (id)objectWithObject:(NSObject *)object;
-- (id)initWithObject:(NSObject *)object;
++ (instancetype)objectWithObject:(NSObject *)object;
+- (instancetype)initWithObject:(NSObject *)object;
 - (NSObject *)internalObject;
 @end
 
 @interface RTRuntime : NSObject
++ (NSArray *)classes;
++ (NSArray *)classesConformingToProtocol:(Protocol *)protocol;
++ (RTClass *)lookUpClass:(NSString *)name;
++ (RTClass *)classNamed:(NSString *)name;
++ (RTClass *)metaClassNamed:(NSString *)name;
++ (RTClass *)ZeroLink;
++ (NSArray *)protocols;
++ (NSArray *)imageNames;
++ (NSArray *)classNamesForImage:(NSString *)image;
++ (id)loadWeak:(id *)address;
++ (id)storeWeak:(id *)address object:(id)object;
 + (NSString *)typeForEncoding:(NSString *)enc varName:(NSString *)varName;
-+ (objc_AssociationPolicy)associationPolicyWithName:(NSString *)policyName;
++ (AssociationPolicy)associationPolicyWithName:(NSString *)policyName;
 @end

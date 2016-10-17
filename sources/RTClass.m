@@ -2,10 +2,10 @@
 
 @implementation RTClass
 
-+ (id)classWithClass:(Class)cls {
++ (instancetype)classWithClass:(Class)cls {
 	return [[[self alloc] initWithClass:cls] autorelease];
 }
-- (id)initWithClass:(Class)cls {
+- (instancetype)initWithClass:(Class)cls {
 	if ((self = [super init])) {
 		_class = cls;
 	}
@@ -28,7 +28,7 @@
 	return class_getInstanceSize(_class);
 }
 - (RTIvar *)getClassVariableWithName:(NSString *)name {
-	return [RTIvar ivarWithIvar:class_getClassVariable(_class, name.UTF8String)];
+	return [RTIvar ivarWithIvar:class_getClassVariable(_class, name.UTF8String) andOwner:self];
 }
 
 - (int)getVersion {
@@ -39,7 +39,7 @@
 }
 
 #pragma mark - Class Ivars
-- (NSArray *)copyIvarList {
+- (NSArray *)ivars {
 	unsigned int outCount = 0;
 	Ivar *ivars = class_copyIvarList(_class, &outCount);
 	//rLog(@"ivars in class %@: %d", NSStringFromClass(_class), outCount);
@@ -53,7 +53,7 @@
 	return r;
 }
 - (RTIvar *)getInstanceVariableWithName:(NSString *)name {
-	return [RTIvar ivarWithIvar:class_getInstanceVariable(_class, name.UTF8String)];
+	return [RTIvar ivarWithIvar:class_getInstanceVariable(_class, name.UTF8String) andOwner:self];
 }
 - (BOOL)addIvarWithName:(NSString *)name size:(size_t)size alignment:(uint8_t)alignment types:(NSString *)types {
 	return class_addIvar(_class, name.UTF8String, size, alignment, types.UTF8String);
@@ -72,7 +72,7 @@
 }
 
 #pragma mark - Class Properties
-- (NSArray *)copyPropertyList {
+- (NSArray *)properties {
 	unsigned int outCount = 0;
 	Property *properties = class_copyPropertyList(_class, &outCount);
 	//rLog(@"properties in class %@: %d", NSStringFromClass(_class), outCount);
@@ -86,11 +86,11 @@
 	return r;
 }
 - (RTProperty *)getPropertyWithName:(NSString *)name {
-	return [RTProperty propertyWithProperty:class_getProperty(_class, name.UTF8String)];
+	return [RTProperty propertyWithProperty:class_getProperty(_class, name.UTF8String) andOwner:self];
 }
 
 #pragma mark - Class Methods
-- (NSArray *)copyMethodList {
+- (NSArray *)methods {
 	unsigned int outCount = 0;
 	Method *methods = class_copyMethodList(_class, &outCount);
 	//rLog(@"methods in class %@: %d", NSStringFromClass(_class), outCount);
@@ -107,12 +107,12 @@
 	return class_addMethod(_class, selector.internalSelector, imp, types.UTF8String);
 }
 - (RTMethod *)getInstanceMethodForSelector:(RTSelector *)selector {
-	RTMethod *m = [RTMethod methodWithMethod:class_getInstanceMethod(_class, selector.internalSelector)];
+	RTMethod *m = [RTMethod methodWithMethod:class_getInstanceMethod(_class, selector.internalSelector) andOwner:self];
 	m.isClassMethod = NO;
 	return m;
 }
 - (RTMethod *)getClassMethodForSelector:(RTSelector *)selector {
-	RTMethod *m = [RTMethod methodWithMethod:class_getClassMethod(_class, selector.internalSelector)];
+	RTMethod *m = [RTMethod methodWithMethod:class_getClassMethod(_class, selector.internalSelector) andOwner:self];
 	m.isClassMethod = YES;
 	return m;
 }
@@ -132,7 +132,7 @@
 }
 
 #pragma mark - Class Protocols
-- (NSArray *)copyProtocolList {
+- (NSArray *)protocols {
 	unsigned int outCount = 0;
 	Protocol **protocols = class_copyProtocolList(_class, &outCount);
 	//rLog(@"protocols in class %@: %d", NSStringFromClass(_class), outCount);
@@ -202,10 +202,10 @@
 #pragma mark - Description
 
 - (NSString *)description {
-	NSMutableArray *protocols = ({ NSArray *a = [self copyProtocolList]; NSMutableArray *b = [a mutableCopy]; [a release]; b; });
-	NSMutableArray *ivars = ({ NSArray *a = [self copyIvarList]; NSMutableArray *b = [a mutableCopy]; [a release]; b; });
-	NSMutableArray *properties = ({ NSArray *a = [self copyPropertyList]; NSMutableArray *b = [a mutableCopy]; [a release]; b; });
-	NSMutableArray *methods = ({ NSArray *a = [self copyMethodList]; NSMutableArray *b = [a mutableCopy]; [a release]; b; });
+	NSMutableArray *protocols = ({ NSArray *a = [self protocols]; NSMutableArray *b = [a mutableCopy]; [a release]; b; });
+	NSMutableArray *ivars = ({ NSArray *a = [self ivars]; NSMutableArray *b = [a mutableCopy]; [a release]; b; });
+	NSMutableArray *properties = ({ NSArray *a = [self properties]; NSMutableArray *b = [a mutableCopy]; [a release]; b; });
+	NSMutableArray *methods = ({ NSArray *a = [self methods]; NSMutableArray *b = [a mutableCopy]; [a release]; b; });
 
 	NSMutableString *description = [[NSString stringWithFormat:@"@interface %@", self.name] mutableCopy];
 

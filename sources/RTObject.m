@@ -2,10 +2,10 @@
 
 @implementation RTObject
 
-+ (id)objectWithObject:(NSObject *)object {
++ (instancetype)objectWithObject:(NSObject *)object {
 	return [[[self alloc] initWithObject:object] autorelease];
 }
-- (id)initWithObject:(NSObject *)object {
+- (instancetype)initWithObject:(NSObject *)object {
 	if ((self = [super init])) {
 		_object = object;
 	}
@@ -20,16 +20,16 @@
 	return object_copy(_object, size);
 }
 - (id)dispose {
- 	return object_dispose(_object);
+	return object_dispose(_object);
 }
 - (RTIvar *)setInstanceVariableWithName:(NSString *)name value:(void *)value {
-	return [RTIvar ivarWithIvar:object_setInstanceVariable(_object, name.UTF8String, value)];
+	return [RTIvar ivarWithIvar:object_setInstanceVariable(_object, name.UTF8String, value) andOwner:self];
 }
 - (RTIvar *)getInstanceVariableWithName:(NSString *)name value:(void **)outValue {
- 	return [RTIvar ivarWithIvar:object_getInstanceVariable(_object, name.UTF8String, outValue)];
+	return [RTIvar ivarWithIvar:object_getInstanceVariable(_object, name.UTF8String, outValue) andOwner:self];
 }
 - (void *)getIndexedIvars {
- 	return object_getIndexedIvars(_object);
+	return object_getIndexedIvars(_object);
 }
 - (id)getIvar:(RTIvar *)ivar {
 	return object_getIvar(_object, ivar.internalIvar);

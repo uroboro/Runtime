@@ -1,7 +1,7 @@
 #import "Runtime.h"
 
 @implementation NSString (indexCategory)
-- (id)objectAtIndexedSubscript:(NSInteger)idx {
+- (NSString *)objectAtIndexedSubscript:(NSInteger)idx {
 	return [self substringWithRange:NSMakeRange(idx, 1)];
 }
 @end
@@ -16,7 +16,7 @@
 }
 
 #pragma mark - Obtaining Class Definitions
-// NSArray of NSStrings
+
 + (NSArray *)classes {
 	unsigned int outCount;
 	Class *classes = objc_copyClassList(&outCount);
@@ -36,22 +36,23 @@
 	//sort protocol array
 	return array;
 }
-+ (Class)lookUpClass:(NSString *)name {
-	return objc_lookUpClass(name.UTF8String);
++ (RTClass *)lookUpClass:(NSString *)name {
+	return [RTClass classWithClass:objc_lookUpClass(name.UTF8String)];
 }
-+ (Class)objc_getClass:(NSString *)name {
-	return objc_getClass(name.UTF8String);
++ (RTClass *)classNamed:(NSString *)name {
+	return [RTClass classWithClass:objc_getClass(name.UTF8String)];
 }
-+ (Class)objc_getMetaClass:(NSString *)name {
-	return objc_getMetaClass(name.UTF8String);
++ (RTClass *)metaClassNamed:(NSString *)name {
+	return [RTClass classWithClass:objc_getMetaClass(name.UTF8String)];
 }
-+ (Class)ZeroLink {
++ (RTClass *)ZeroLink {
 	//crash process
-	return objc_getRequiredClass("ZeroLink");
+	return [RTClass classWithClass:objc_getRequiredClass("ZeroLink")];
 }
 
-#pragma mark - Convert to array of custom class
-+ (NSArray *)objc_copyProtocolList {
+#pragma mark - Obtaining Protocol Definitions
+
++ (NSArray *)protocols {
 	unsigned int outCount = 0;
 	Protocol **protocols = objc_copyProtocolList(&outCount);
  /**/rLog(@"registered protocols: %d", outCount);
@@ -64,6 +65,7 @@
 	CFRelease(array);
 	return r;
 }
+
 #pragma mark - Working with Libraries
 
 + (NSArray *)imageNames {
@@ -78,9 +80,10 @@
 	[array sortUsingSelector:@selector(caseInsensitiveCompare:)];
 	return [array copy];
 }
-+ (NSArray *)copyClassNamesForImage:(const char *)image {
+
++ (NSArray *)classNamesForImage:(NSString *)image {
 	unsigned int outCount;
-	const char **classNames = objc_copyClassNamesForImage(image, &outCount);
+	const char **classNames = objc_copyClassNamesForImage(image.UTF8String, &outCount);
 	//rLog(@"registered classes: %d at %p", outCount, classes);
 	NSMutableArray *array = [NSMutableArray arrayWithCapacity:outCount];
 	for (unsigned int i = 0; classNames[i]; i++) {
@@ -94,18 +97,22 @@
 // Sending Messages
 
 #pragma mark - Using Objective-C Language Features
-#if 0
-void objc_enumerationMutation(id obj)
-void objc_setEnumerationMutationHandler(void (*handler)(id))
-id objc_loadWeak(id *location)
-id objc_storeWeak(id *location, id obj)
-#endif
 
-// Utils
++ (id)loadWeak:(id *)address {
+	return objc_loadWeak(address);
+}
+
++ (id)storeWeak:(id *)address object:(id)object {
+	return objc_storeWeak(address, object);
+}
+
+#pragma mark - Utilities
+
 + (NSString *)typeForEncoding:(NSString *)encodingString varName:(NSString *)varName {
 	return rtTypeForEncoding(encodingString, varName);
 }
-+ (objc_AssociationPolicy)associationPolicyWithName:(NSString *)policyName {
+
++ (AssociationPolicy)associationPolicyWithName:(NSString *)policyName {
 	NSDictionary *policies = @{
 		  @"OBJC_ASSOCIATION_ASSIGN" : @(OBJC_ASSOCIATION_ASSIGN)
 		, @"OBJC_ASSOCIATION_RETAIN_NONATOMIC" : @(OBJC_ASSOCIATION_RETAIN_NONATOMIC)

@@ -2,19 +2,19 @@
 
 @implementation RTMethod
 
-+ (id)methodWithMethod:(Method)method {
++ (instancetype)methodWithMethod:(Method)method {
 	return [[[self alloc] initWithMethod:method] autorelease];
 }
-+ (id)methodWithMethod:(Method)method andOwner:(RTClass *)class {
-	return [[[self alloc] initWithMethod:method andOwner:class] autorelease];
++ (instancetype)methodWithMethod:(Method)method andOwner:(id)owner {
+	return [[[self alloc] initWithMethod:method andOwner:owner] autorelease];
 }
-- (id)initWithMethod:(Method)method {
+- (instancetype)initWithMethod:(Method)method {
 	return [self initWithMethod:method andOwner:nil];
 }
-- (id)initWithMethod:(Method)method andOwner:(RTClass *)class {
+- (instancetype)initWithMethod:(Method)method andOwner:(id)owner {
 	if ((self = [super init])) {
 		_method = method;
-		_owner = class;
+		_owner = owner;
 	}
 	return self;
 }
@@ -55,7 +55,7 @@
 	id method_invoke(id receiver, Method m, ...)
 	void method_invoke_stret(id receiver, Method m, ...)
 	Implementation method_getImplementation( Method method)
-	struct objc_method_description *method_getDescription( Method m)
+	MethodDescription *method_getDescription( Method m)
 	Implementation method_setImplementation( Method method, Implementation imp)
 	void method_exchangeImplementations( Method m1, Method m2)
 

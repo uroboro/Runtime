@@ -2,10 +2,10 @@
 
 @implementation RTPropertyAttribute : NSObject
 
-+ (id)propertyAttributeWithPropertyAttribute:(PropertyAttribute)propertyAttribute {
++ (instancetype)propertyAttributeWithPropertyAttribute:(PropertyAttribute)propertyAttribute {
 	return [[[self alloc] initWithPropertyAttribute:propertyAttribute] autorelease];
 }
-- (id)initWithPropertyAttribute:(PropertyAttribute)propertyAttribute {
+- (instancetype)initWithPropertyAttribute:(PropertyAttribute)propertyAttribute {
 	if ((self = [super init])) {
 		_propertyAttribute = propertyAttribute;
 	}
