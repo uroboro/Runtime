@@ -1,4 +1,4 @@
-//https://developer.apple.com/library/ios//documentation/Cocoa/Reference/ObjCRuntimeRef/index.html
+//https://developer.apple.com/reference/objectivec/objective_c_runtime
 #include <objc/runtime.h>
 
 typedef struct objc_property *Property;
