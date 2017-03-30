@@ -1,4 +1,5 @@
-#import "Runtime.h"
+#import "RTIvar.h"
+#import "RTDecoding.h"
 
 @implementation RTIvar
 
@@ -33,10 +34,10 @@
 }
 
 - (NSString *)type {
-	return [RTRuntime typeForEncoding:self.typeEncoding varName:nil];
+	return rtTypeForEncoding(self.typeEncoding, nil);
 }
 - (NSString *)typeWithName:(NSString *)name {
-	return [RTRuntime typeForEncoding:self.typeEncoding varName:name];
+	return rtTypeForEncoding(self.typeEncoding, name);
 }
 
 #pragma mark - Description

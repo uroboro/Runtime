@@ -1,5 +1,6 @@
 #include <dlfcn.h>
 #import <Runtime.h>
+#import <RT_Runtime.h>
 
 @protocol XYZProtocol
 - (void)aMethod;
@@ -31,15 +32,25 @@
 //$ctor { rLog(@"ctor	loading"); }
 //%dtor { rLog(@"dtor unloading"); }
 
-int main() {
+int main(int argc, char **argv, char **envp, char **apple) {
 	@autoreleasepool {
-		void * dylib = dlopen(".theos/obj/debug/Runtime.dylib", RTLD_NOW);
-		printf("\n\e[36m%s\e[m\n", [[objc_getClass("RTClass") classWithClass:XYZClass.class] description].UTF8String);
+		if (argc < 2) {
+			return 1;
+		}
 
-Class RTRuntime = objc_getClass("RTRuntime");
-for (NSString * imageName in [RTRuntime imageNames]) {
-printf("%s:\n[ %s ]\n", imageName.UTF8String, [[RTRuntime classNamesForImage:imageName] componentsJoinedByString:@", "].UTF8String);
-}
+		char str[256];
+		strcpy(str, argv[1]);
+		strcat(str, "/Runtime.dylib");
+		printf("string: %s\n", str);
+		void * dylib = dlopen(str, RTLD_NOW);
+
+		Class RTRuntime = objc_getClass("RTRuntime");
+		for (NSString * imageName in [RTRuntime imageNames]) {
+			printf("%s:\n[ %s ]\n", imageName.UTF8String, [[RTRuntime classNamesForImage:imageName] componentsJoinedByString:@", "].UTF8String);
+		}
+
+		/*printf("\n\e[36m%s\e[m\n", [[objc_getClass("RTClass") classWithClass:NSString.class] description].UTF8String);*/
+
 		dlclose(dylib);
 	}
 

@@ -1,4 +1,4 @@
-#import "Runtime.h"
+#import "RTPropertyAttribute.h"
 
 @implementation RTPropertyAttribute : NSObject
 

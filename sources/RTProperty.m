@@ -1,4 +1,7 @@
-#import "Runtime.h"
+#import "RTProperty.h"
+#import "RTPropertyAttribute.h"
+#import "RTClass.h"
+#import "RTIvar.h"
 
 @implementation RTProperty
 
@@ -112,7 +115,8 @@
 	if (self.hasCustomSetter) { [attributesArray addObject:[NSString stringWithFormat:@"setter=%@", self.setter]]; }
 
 	//NSString *typeString = [RTRuntime typeForEncoding:self.type varName:self.name];
-	NSString *typeString = [[_owner getInstanceVariableWithName:self.backingIvar] typeWithName:self.name];
+	RTIvar *ivar = [(RTClass *)_owner getInstanceVariableWithName:self.backingIvar];
+	NSString *typeString = [ivar typeWithName:self.name];
 	NSString *attributesString = nil;
 	if (attributesArray.count > 0) {
 		attributesString = [NSString stringWithFormat:@"@property (%@) %@", [attributesArray componentsJoinedByString:@", "], typeString];

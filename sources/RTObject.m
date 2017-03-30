@@ -1,4 +1,7 @@
-#import "Runtime.h"
+#import "RTObject.h"
+#import "RTClass.h"
+#import "RTIvar.h"
+#import "RT_Runtime.h"
 
 @implementation RTObject
 

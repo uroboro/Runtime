@@ -1,4 +1,5 @@
-#import "Runtime.h"
+#import "RTMethod.h"
+#import "RTDecoding.h"
 
 @implementation RTMethod
 
@@ -75,13 +76,13 @@
 	NSMutableArray *fullNameArray = [NSMutableArray arrayWithCapacity:nameSegments.count];
 	if (types.count > 0) {
 		[types enumerateObjectsUsingBlock:^(NSString *type, NSUInteger idx, BOOL *stop) {
-			[fullNameArray addObject:[NSString stringWithFormat:@"%@:(%@)arg%d", nameSegments[idx], [[RTRuntime typeForEncoding:type varName:@""] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]], (int)idx]];
+			[fullNameArray addObject:[NSString stringWithFormat:@"%@:(%@)arg%d", nameSegments[idx], [rtTypeForEncoding(type, @"") stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]], (int)idx]];
 		}];
 	} else {
 		[fullNameArray addObject:nameSegments[0]];
 	}
 
-	return [NSString stringWithFormat:@"%c (%@)%@", self.isClassMethod ? '+':'-', [[RTRuntime typeForEncoding:self.returnType varName:@""] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]], [fullNameArray componentsJoinedByString:@" "]];
+	return [NSString stringWithFormat:@"%c (%@)%@", self.isClassMethod ? '+':'-', [rtTypeForEncoding(self.returnType, @"") stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]], [fullNameArray componentsJoinedByString:@" "]];
 }
 
 #pragma mark - Comparison
